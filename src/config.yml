@@ -1,0 +1,19 @@
+siege:
+  respawnwaiting:
+    world:
+    x:
+    y:
+    z:
+raidon: false
+regular:
+  on: false
+  schedule:
+  - Ostia
+  - Memphis
+  - Primot
+  - Epeira
+  - Tyrus
+  - Erin
+  index: 0
+  thronewar: Tyrus
+  holywar: Erin

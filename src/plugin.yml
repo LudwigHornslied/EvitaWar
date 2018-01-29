@@ -1,0 +1,14 @@
+main: com.tistory.hornslied.evitaonline.war.EvitaWarMain
+name: EvitaWar
+version: 1.0
+author: Ludwig Hornslied
+depend: [EvitaCore, Towny, WorldEdit, KoTH]
+commands:
+  raid:
+    aliases: [레이드]
+  koth:
+    aliases: [점령전]
+  totalwar:
+    aliases: [총력전]
+  conquest:
+    aliases: [컨퀘스트]
