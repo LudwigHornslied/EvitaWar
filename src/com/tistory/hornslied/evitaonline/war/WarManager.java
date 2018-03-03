@@ -139,13 +139,13 @@ public class WarManager {
 	}
 
 	public WarType getHighPriorityWar() {
-		if (isSiegeRunning()) {
+		if (currentSiege != null) {
 			return WarType.SIEGE;
-		} else if (isConquestRunning()) {
+		} else if (currentConquest != null) {
 			return WarType.CONQUEST;
-		} else if (isKoTHRunning()) {
+		} else if (currentKoth != null) {
 			return WarType.KOTH;
-		} else if (isRaidRunning()) {
+		} else if (currentRaid != null) {
 			return WarType.RAID;
 		} else {
 			return null;
@@ -186,6 +186,10 @@ public class WarManager {
 
 	public boolean isKoTHObjective(Town town) {
 		return currentKoth != null && currentKoth.getAC().equals(town);
+	}
+	
+	public boolean isConquestObjective(Town town) {
+		return currentConquest != null && currentConquest.getAncientCity().equals(town);
 	}
 
 	public enum WarType {

@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
@@ -13,7 +12,7 @@ import com.tistory.hornslied.evitaonline.utils.Resources;
 import subside.plugins.koth.gamemodes.RunningKoth;
 import subside.plugins.koth.gamemodes.RunningKoth.EndReason;
 
-public class KoTH implements AbstractWar {
+public abstract class KoTH implements AbstractWar {
 	
 	private int waitingTime;
 	private int runningTime;
@@ -42,8 +41,7 @@ public class KoTH implements AbstractWar {
 			} else if (isBeingCapped()) {
 				if (!additionalTime) {
 					additionalTime = true;
-					Bukkit.broadcastMessage(Resources.tagWar + ChatColor.GOLD + getCapperNation()
-							+ " 국가에게 추가 시간이 주어집니다, 고대 도시 " + getAC() + " 를 점령할수 있는 마지막 기회입니다!");
+					notifyAdditionalTime();
 					runningTime = -1;
 				}
 			} else {
@@ -121,15 +119,18 @@ public class KoTH implements AbstractWar {
 		}
 	}
 
-	public Nation getCapperNation() {
-		try {
-			return TownyUniverse.getDataSource().getResident(getCapperName()).getTown().getNation();
-		} catch (NotRegisteredException | NullPointerException e) {
-			return null;
-		}
-	}
-
 	public Town getAC() {
 		return ancientCity;
+	}
+	
+	abstract public KoTHType getType();
+	
+	abstract public String getCapperObjectName();
+	
+	abstract protected void notifyAdditionalTime();
+	
+	public enum KoTHType {
+		ANCIENTCITY,
+		GENERAL
 	}
 }

@@ -6,18 +6,20 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class CaptureZone {
+	private String name;
 	private ArrayList<Player> cappers;
 	private Location min;
 	private Location max;
 
-	public CaptureZone(Location min, Location max) {
+	public CaptureZone(String name, Location min, Location max) {
 		cappers = new ArrayList<>();
+		this.name = name;
 		this.min = min;
 		this.max = max;
 	}
 
 	public boolean isEmpty() {
-		return false;
+		return cappers.isEmpty();
 	}
 
 	public boolean isIn(Player player) {
@@ -29,9 +31,17 @@ public class CaptureZone {
 				&& min.getBlockY() <= loc.getBlockY() && max.getBlockY() >= loc.getBlockY()
 				&& min.getBlockZ() <= loc.getBlockZ() && max.getBlockZ() >= loc.getBlockZ();
 	}
+	
+	public String getName() {
+		return name;
+	}
 
 	public Player getCapper() {
 		return cappers.get(0);
+	}
+	
+	public boolean hasCapper(Player player) {
+		return cappers.contains(player);
 	}
 
 	public void addCapper(Player player) {

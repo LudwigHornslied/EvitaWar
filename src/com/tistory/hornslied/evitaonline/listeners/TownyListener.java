@@ -67,9 +67,9 @@ public class TownyListener implements Listener {
 			return;
 
 		if (TownySettings.isNotificationUsingTitles()) {
-			if(!event.getFrom().getBukkitWorld().equals(event.getTo().getBukkitWorld()))
+			if (!event.getFrom().getBukkitWorld().equals(event.getTo().getBukkitWorld()))
 				return;
-			
+
 			try {
 				Resident resident = TownyUniverse.getDataSource().getResident(event.getPlayer().getName());
 				TownyMessaging.sendTitleMessageToResident(resident, Colors.LightGreen + ChatColor.BOLD + "야생",
@@ -77,19 +77,19 @@ public class TownyListener implements Listener {
 			} catch (TownyException e) {
 				return;
 			}
-			
+
 		}
 	}
-	
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onCombatEnterTown(PlayerEnterTownEvent e) {
-		if(e.getPlayerMoveEvent().isCancelled())
+		if (e.getPlayerMoveEvent().isCancelled())
 			return;
-		
+
 		Town enteredTown = e.getEnteredtown();
-		
-		if(PvPManager.getInstance().isCombatTag(e.getPlayer()) && enteredTown.isAC() && !WarManager.getInstance().isKoTHObjective(enteredTown)) {
+
+		if (PvPManager.getInstance().isCombatTag(e.getPlayer()) && enteredTown.isAC()
+				&& !WarManager.getInstance().isKoTHObjective(enteredTown)) {
 			e.getPlayerMoveEvent().setCancelled(true);
 			e.getPlayer().sendMessage(Resources.tagCombat + ChatColor.RED + "전투 상태에서 고대 도시에 들어갈 수 없습니다!");
 		}

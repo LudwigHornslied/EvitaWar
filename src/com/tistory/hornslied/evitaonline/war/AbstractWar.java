@@ -1,8 +1,8 @@
 package com.tistory.hornslied.evitaonline.war;
 
 import java.util.ArrayList;
-
-import org.bukkit.scheduler.BukkitRunnable;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.palmergames.bukkit.towny.object.Nation;
 
@@ -11,19 +11,21 @@ public interface AbstractWar {
 	
 	public default void start() {
 		notifyWaiting();
-		class WaitingTimer extends BukkitRunnable {
+		Timer waitingTimer = new Timer();
+		
+		class WaitingTimer extends TimerTask {
 			@Override
 			public void run() {
 				if(getWaitingTime() < 1) {
 					init();
-					cancel();
+					waitingTimer.cancel();
 				} else {
 					setWaitingTime(getWaitingTime() -1);
 				}
 			}
 		}
 		
-		new WaitingTimer().runTaskTimer(EvitaWarMain.getInstance(), 20, 20);
+		waitingTimer.schedule(new WaitingTimer(), 1000, 1000);
 	}
 	
 	public default boolean isParticipating(Nation nation) {

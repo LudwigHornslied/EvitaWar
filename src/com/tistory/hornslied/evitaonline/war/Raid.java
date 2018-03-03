@@ -3,6 +3,8 @@ package com.tistory.hornslied.evitaonline.war;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -13,7 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Town;
@@ -31,7 +32,7 @@ public class Raid implements AbstractWar, Listener {
 	private int waitingTime;
 	private int runningTime;
 
-	private Counter counter;
+	private Timer counterTimer;
 
 	public Raid(int runningTime) {
 		participatingTowns = new ArrayList<Town>();
@@ -60,7 +61,7 @@ public class Raid implements AbstractWar, Listener {
 		Bukkit.getPluginManager().registerEvents(this, EvitaWarMain.getInstance());
 	}
 
-	class Counter extends BukkitRunnable {
+	class Counter extends TimerTask {
 
 		@Override
 		public void run() {
@@ -105,8 +106,8 @@ public class Raid implements AbstractWar, Listener {
 
 		bossBar.setVisible(true);
 		setPvP(true);
-		counter = new Counter();
-		counter.runTaskTimer(EvitaWarMain.getInstance(), 20, 20);
+		counterTimer = new Timer();
+		counterTimer.schedule(new Counter(), 1000, 1000);
 
 		Bukkit.broadcastMessage(Resources.tagWar + ChatColor.GOLD + "레이드가 시작됩니다! 이제부터 모든 마을에서 PvP가 가능하니 주의하세요.");
 	}
@@ -114,7 +115,7 @@ public class Raid implements AbstractWar, Listener {
 	@Override
 	public void stop() {
 		bossBar.setVisible(false);
-		counter.cancel();
+		counterTimer.cancel();
 		setPvP(false);
 		WarManager.getInstance().setRaid(null);
 		Bukkit.broadcastMessage(Resources.tagWar + ChatColor.GOLD + "레이드가 끝났습니다! 이제부터 마을에 PvP 보호가 적용됩니다.");

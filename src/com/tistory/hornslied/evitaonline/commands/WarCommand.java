@@ -1,23 +1,32 @@
 package com.tistory.hornslied.evitaonline.commands;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import com.palmergames.bukkit.towny.TownySettings;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Nation;
 import com.palmergames.bukkit.towny.object.TownyUniverse;
+import com.sk89q.worldedit.bukkit.WorldEditPlugin;
+import com.sk89q.worldedit.bukkit.selections.Selection;
 import com.tistory.hornslied.evitaonline.utils.ChatTools;
 import com.tistory.hornslied.evitaonline.utils.Resources;
+import com.tistory.hornslied.evitaonline.war.EvitaWarMain;
 import com.tistory.hornslied.evitaonline.war.Raid;
 import com.tistory.hornslied.evitaonline.war.WarManager;
+import com.tistory.hornslied.evitaonline.war.conquest.ThroneWar;
 
 public class WarCommand implements CommandExecutor {
 	private static final List<String> totalWarOutput = new ArrayList<String>();
@@ -133,7 +142,7 @@ public class WarCommand implements CommandExecutor {
 				switch(args[0].toLowerCase()) {
 				case "시작":
 				case "start":
-					if(WarManager.getInstance().isRaidRunning()) {
+					if(WarManager.getInstance().isRaidRunning() || WarManager.getInstance().isRaidWaiting()) {
 						sender.sendMessage(Resources.tagWar + ChatColor.RED + "이미 레이드가 진행중입니다.");
 						break;
 					}
@@ -170,11 +179,118 @@ public class WarCommand implements CommandExecutor {
 		case "conquest":
 			if (args.length > 0) {
 				switch (args[0].toLowerCase()) {
+				case "시작":
 				case "start":
+					if(args.length < 2) {
+						sender.sendMessage(Resources.tagWar + ChatColor.RED + "명령어 사용 방법: /컨퀘스트 시작 [왕쟁/성전]");
+						break;
+					}
+					
+					if(WarManager.getInstance().isConquestRunning()) {
+						sender.sendMessage(Resources.tagWar + ChatColor.RED + "이미 컨퀘스트가 진행중입니다.");
+						break;
+					}
+					
+					switch(args[1].toLowerCase()) {
+					case "왕위 쟁탈전":
+					case "왕쟁":
+					case "thronewar":
+						ThroneWar throneWar = new ThroneWar();
+						WarManager.getInstance().setConquest(throneWar);
+						throneWar.start();
+						break;
+					case "성전":
+					case "holywar":
+					}
+					break;
+				case "중단":
+				case "stop":
+					if(!WarManager.getInstance().isConquestRunning()) {
+						sender.sendMessage(Resources.tagWar + ChatColor.RED + "컨퀘스트가 진행중이지 않습니다!");
+						break;
+					}
+					
+					WarManager.getInstance().getConquest().stop();
+					break;
+				case "구역":
 				case "area":
 					if(args.length < 3) {
 						break;
 					}
+					
+					switch(args[1].toLowerCase()) {
+					case "추가":
+					case "add":
+						if(!(sender instanceof Player)) {
+							sender.sendMessage(Resources.messageConsole);
+							break;
+						}
+						
+						if(args.length < 4) {
+							sender.sendMessage(Resources.tagServer + ChatColor.RED + "명령어 사용 방법: /컨퀘스트 구역 추가 [왕쟁/성전] <이름>");
+							break;
+						}
+						
+						String conqName;
+						
+						switch(args[2].toLowerCase()) {
+						case "왕위 쟁탈전":
+						case "왕쟁":
+						case "thronewar":
+							conqName = "thronewar";
+							break;
+						case "성전":
+						case "holywar":
+							conqName = "holywar";
+							break;
+						default:
+							conqName = null;
+							break;
+						}
+						
+						if(conqName == null) {
+							sender.sendMessage(Resources.tagServer + ChatColor.RED + "명령어 사용 방법: /컨퀘스트 구역 추가 [왕쟁/성전] <이름>");
+							break;
+						}
+						
+						FileConfiguration areaStorage = EvitaWarMain.getInstance().getConquests();
+						
+						if(areaStorage.getConfigurationSection(conqName + "." + args[3]) != null) {
+							sender.sendMessage(Resources.tagServer + ChatColor.RED + "이미 존재하는 구역입니다.");
+							break;
+						}
+						
+						Selection sel = ((WorldEditPlugin)Bukkit.getPluginManager().getPlugin("WorldEdit")).getSelection((Player) sender);
+						
+						if(sel == null) {
+							sender.sendMessage(Resources.tagServer + ChatColor.RED + "먼저 월드에딧으로 영역을 선택해야 합니다.");
+							break;
+						}
+						
+						Location min = sel.getMinimumPoint();
+						Location max = sel.getMaximumPoint();
+						
+						areaStorage.set(conqName + "." + args[3] + ".world", sel.getWorld().getName());
+						areaStorage.set(conqName + "." + args[3] + ".min.x", min.getX());
+						areaStorage.set(conqName + "." + args[3] + ".min.y", min.getY());
+						areaStorage.set(conqName + "." + args[3] + ".min.z", min.getZ());
+						areaStorage.set(conqName + "." + args[3] + ".max.x", max.getX());
+						areaStorage.set(conqName + "." + args[3] + ".max.y", max.getY());
+						areaStorage.set(conqName + "." + args[3] + ".max.z", max.getZ());
+						try {
+							areaStorage.save(new File(EvitaWarMain.getInstance().getDataFolder(), "conquests.yml"));
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						
+						sender.sendMessage(Resources.tagServer + ChatColor.AQUA + "영역 " + args[3] + " 저장 완료.");
+						break;
+					case "제거":
+					case "remove":
+					case "delete":
+						break;
+					}
+					break;
 				}
 			} else {
 

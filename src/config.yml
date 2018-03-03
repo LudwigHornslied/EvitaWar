@@ -8,6 +8,7 @@ raidon: false
 regular:
   on: false
   schedule:
+  - Mitsumura
   - Ostia
   - Memphis
   - Primot
@@ -15,5 +16,6 @@ regular:
   - Tyrus
   - Erin
   index: 0
+  general: Mitsumura
   thronewar: Tyrus
   holywar: Erin

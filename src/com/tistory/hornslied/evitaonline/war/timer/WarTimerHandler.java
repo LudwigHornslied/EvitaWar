@@ -49,9 +49,7 @@ public class WarTimerHandler {
 		@Override
 		public void run() {
 			FileConfiguration config = EvitaWarMain.getInstance().getConfiguration();
-
-			@SuppressWarnings("unchecked")
-			List<String> acList = (List<String>) config.getList("regular.schedule");
+			List<String> acList = config.getStringList("regular.schedule");
 			int index = config.getInt("regular.index");
 
 			try {

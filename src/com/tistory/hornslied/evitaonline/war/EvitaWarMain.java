@@ -96,7 +96,7 @@ public class EvitaWarMain extends JavaPlugin {
 		return confronts;
 	}
 	
-	public FileConfiguration getConquest() {
+	public FileConfiguration getConquests() {
 		return conquests;
 	}
 }

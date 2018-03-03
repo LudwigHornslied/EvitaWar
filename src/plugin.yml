@@ -2,7 +2,7 @@ main: com.tistory.hornslied.evitaonline.war.EvitaWarMain
 name: EvitaWar
 version: 1.0
 author: Ludwig Hornslied
-depend: [EvitaCore, Towny, WorldEdit, KoTH]
+depend: [EvitaCore, Towny, WorldEdit, KoTH, ArchonCrates]
 commands:
   raid:
     aliases: [레이드]

@@ -1,8 +1,10 @@
 package com.tistory.hornslied.evitaonline.war;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.palmergames.bukkit.towny.TownyMessaging;
 import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
@@ -21,7 +23,7 @@ public class Siege implements AbstractWar {
 	private int occupyNumber;
 	private boolean additionalTime;
 
-	private Counter counter;
+	private Timer counterTimer;
 
 	public Siege(Nation attacker, Town defender) {
 
@@ -40,7 +42,7 @@ public class Siege implements AbstractWar {
 		additionalTime = false;
 	}
 
-	class Counter extends BukkitRunnable {
+	class Counter extends TimerTask {
 
 		@Override
 		public void run() {
@@ -160,8 +162,8 @@ public class Siege implements AbstractWar {
 	public void init() {
 		setPvP(true);
 
-		counter = new Counter();
-		counter.runTaskTimer(EvitaWarMain.getInstance(), 20, 20);
+		counterTimer = new Timer();
+		counterTimer.schedule(new Counter(), 1000, 1000);
 	}
 
 	@Override
@@ -169,7 +171,7 @@ public class Siege implements AbstractWar {
 		setPvP(false);
 
 		WarManager.getInstance().setSiege(null);
-		counter.cancel();
+		counterTimer.cancel();
 	}
 
 	@Override
